@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace lfa_trabalhopratico1_20221
 {
@@ -6,7 +7,13 @@ namespace lfa_trabalhopratico1_20221
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            var caminho = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+            var linhas = File.ReadAllLines($@"{caminho}\automato.txt");
+
+            var automato = new Automato(linhas);
+            automato.Imprimir();
+
+            Console.Read();
         }
     }
 }
