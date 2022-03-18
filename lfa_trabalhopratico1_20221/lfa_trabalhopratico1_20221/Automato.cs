@@ -81,5 +81,25 @@ namespace lfa_trabalhopratico1_20221
                 Console.WriteLine(" -" + transitions);
             }
         }
+
+        public string DeterminarTipo()
+        {
+            var tipo = "DFA";
+
+            foreach (var transition in Transitions)
+            {
+                if (transition.Contains("$"))
+                {
+                    tipo = "eNFA";
+                    break;
+                }
+                if (transition.Contains(","))
+                {
+                    tipo = "NFA";
+                }
+            }
+
+            return tipo;
+        }
     }
 }

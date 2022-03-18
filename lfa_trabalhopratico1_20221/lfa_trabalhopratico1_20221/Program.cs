@@ -11,6 +11,8 @@ namespace lfa_trabalhopratico1_20221
             var linhas = File.ReadAllLines($@"{caminho}\automato.txt");
 
             var automato = new Automato(linhas);
+
+            Console.WriteLine($"O autômato é um {automato.DeterminarTipo()}\n");
             automato.Imprimir();
 
             Console.Read();
