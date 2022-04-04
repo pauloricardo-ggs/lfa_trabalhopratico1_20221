@@ -5,15 +5,27 @@ namespace lfa_trabalhopratico1_20221
 {
     public class Automato
     {
-        public List<string> States { get; private set; }
-        public List<string> Initial { get; private set; }
-        public List<string> Accepting { get; private set; }
-        public List<string> Alphabet { get; private set; }
-        public List<string> Transitions { get; private set; }
+        public List<string> States { get; set; }
+        public List<string> Initial { get; set; }
+        public List<string> Accepting { get; set; }
+        public List<string> Alphabet { get; set; }
+        public List<string> Transitions { get; set; }
 
         public List<string> TransitionsActualState {  get; private set; }
         public List<string> TransitionsInput { get; private set; }
         public List<string[]> TransitionsFutureState { get; private set; }
+
+        public Automato()
+        {
+            States = new List<string>();
+            Initial = new List<string>();
+            Accepting = new List<string>();
+            Alphabet = new List<string>();
+            Transitions = new List<string>();
+            TransitionsActualState = new List<string>();
+            TransitionsInput = new List<string>();
+            TransitionsFutureState = new List<string[]>();
+        }
 
         public Automato(string[] linhas)
         {
@@ -126,8 +138,9 @@ namespace lfa_trabalhopratico1_20221
         public void ConverterNFAParaDFA()
         {
             var tabela = new TabelaConversao(this);
-            tabela.Criar();
-            tabela.Imprimir();
+            tabela.CriarTabela();
+            tabela.CriarEstadosNovos();
+            tabela.RecriarTabelaComEstadosNovos();
         }
     }
 }

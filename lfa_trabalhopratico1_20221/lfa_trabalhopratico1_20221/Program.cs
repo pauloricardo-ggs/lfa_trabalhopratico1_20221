@@ -16,6 +16,7 @@ namespace lfa_trabalhopratico1_20221
             automato.Imprimir();
             automato.ConverterNFAParaDFA();
 
+
             Console.Read();
         }
     }
