@@ -11,6 +11,10 @@ namespace lfa_trabalhopratico1_20221
         public List<string> Alphabet { get; private set; }
         public List<string> Transitions { get; private set; }
 
+        public List<string> TransitionsActualState {  get; private set; }
+        public List<string> TransitionsInput { get; private set; }
+        public List<string[]> TransitionsFutureState { get; private set; }
+
         public Automato(string[] linhas)
         {
             States = new List<string>();
@@ -18,6 +22,9 @@ namespace lfa_trabalhopratico1_20221
             Accepting = new List<string>();
             Alphabet = new List<string>();
             Transitions = new List<string>();
+            TransitionsActualState = new List<string>();
+            TransitionsInput = new List<string>();
+            TransitionsFutureState = new List<string[]>();
 
             var comando = "comeco";
             foreach(string linha in linhas)
@@ -47,6 +54,8 @@ namespace lfa_trabalhopratico1_20221
                     Transitions.Add(linha);
                 }
             }
+
+            OrganizarTransicoes();
         }
 
         public void Imprimir()
@@ -100,6 +109,25 @@ namespace lfa_trabalhopratico1_20221
             }
 
             return tipo;
+        }
+
+        public void OrganizarTransicoes()
+        {
+            char[] delimitadores = { ':', '>' };
+            foreach(var transition in Transitions)
+            {
+                var divisao = transition.Split(delimitadores);
+                TransitionsActualState.Add(divisao[0]);
+                TransitionsInput.Add(divisao[1]);
+                TransitionsFutureState.Add(divisao[2].Split(','));
+            }
+        }
+
+        public void ConverterNFAParaDFA()
+        {
+            var tabela = new TabelaConversao(this);
+            tabela.Criar();
+            tabela.Imprimir();
         }
     }
 }
