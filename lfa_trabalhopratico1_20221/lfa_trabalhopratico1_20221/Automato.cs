@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace lfa_trabalhopratico1_20221
 {
@@ -15,6 +16,8 @@ namespace lfa_trabalhopratico1_20221
         public List<string> TransitionsInput { get; private set; }
         public List<string[]> TransitionsFutureState { get; private set; }
 
+        public AutomatoFD AutomatoFD { get; set; }
+
         public Automato()
         {
             States = new List<string>();
@@ -29,6 +32,51 @@ namespace lfa_trabalhopratico1_20221
 
         public Automato(string[] linhas)
         {
+            InicializarListas();
+
+            PopularPropriedades(linhas);
+
+            OrganizarTransicoes();
+
+            CriarAutomatoEspecializado();
+        }
+
+        public void CriarAutomatoEspecializado()
+        {
+            var tipo = DeterminarTipo();
+            if (tipo == "DFA")
+            {
+                CriarAutomatoFD();
+            }
+        }
+
+        public void CriarAutomatoFD()
+        {
+            AutomatoFD = new AutomatoFD(Alphabet, Transitions);
+            foreach (var state in States)
+            {
+                var estado = new Estado(state);
+                AutomatoFD.Estados.Add(estado);
+                if (Initial.Contains(state)) { AutomatoFD.EstadoInicial = estado; }
+                if (Accepting.Contains(state)) { AutomatoFD.EstadosFinais.Add(estado); }
+            }
+
+            foreach (var estado in AutomatoFD.Estados)
+            {
+                for (var i = 0; i < Transitions.Count; i++)
+                {
+                    if (estado.Nome == TransitionsActualState[i])
+                    {
+                        estado.Entrada.Add(TransitionsInput[i]);
+                        var futureState = TransitionsFutureState[i][0];
+                        estado.ProximoEstado.Add(AutomatoFD.Estados.Find(e => e.Nome == futureState));
+                    }
+                }
+            }
+        }
+
+        public void InicializarListas()
+        {
             States = new List<string>();
             Initial = new List<string>();
             Accepting = new List<string>();
@@ -37,11 +85,14 @@ namespace lfa_trabalhopratico1_20221
             TransitionsActualState = new List<string>();
             TransitionsInput = new List<string>();
             TransitionsFutureState = new List<string[]>();
+        }
 
+        public void PopularPropriedades(string[] linhas)
+        {
             var comando = "comeco";
-            foreach(string linha in linhas)
+            foreach (string linha in linhas)
             {
-                if(linha == "#states" || linha == "#initial" || linha == "#accepting" || linha == "#alphabet" || linha == "#transitions")
+                if (linha == "#states" || linha == "#initial" || linha == "#accepting" || linha == "#alphabet" || linha == "#transitions")
                 {
                     comando = linha;
                 }
@@ -66,40 +117,38 @@ namespace lfa_trabalhopratico1_20221
                     Transitions.Add(linha);
                 }
             }
-
-            OrganizarTransicoes();
         }
 
         public void Imprimir()
         {
-            Console.WriteLine("States");
+            Console.WriteLine("#states");
             foreach(var state in States)
             {
-                Console.WriteLine(" -" + state);
+                Console.WriteLine(state);
             }
 
-            Console.WriteLine("Initial");
+            Console.WriteLine("#initial");
             foreach (var initial in Initial)
             {
-                Console.WriteLine(" -" + initial);
+                Console.WriteLine(initial);
             }
 
-            Console.WriteLine("Accepting");
+            Console.WriteLine("#accepting");
             foreach (var accepting in Accepting)
             {
-                Console.WriteLine(" -" + accepting);
+                Console.WriteLine(accepting);
             }
 
-            Console.WriteLine("Alphabet");
+            Console.WriteLine("#alphabet");
             foreach (var alphabet in Alphabet)
             {
-                Console.WriteLine(" -" + alphabet);
+                Console.WriteLine(alphabet);
             }
 
-            Console.WriteLine("Transitions");
+            Console.WriteLine("#transitions");
             foreach (var transitions in Transitions)
             {
-                Console.WriteLine(" -" + transitions);
+                Console.WriteLine(transitions);
             }
         }
 
@@ -141,6 +190,7 @@ namespace lfa_trabalhopratico1_20221
             tabela.CriarTabela();
             tabela.CriarEstadosNovos();
             tabela.RecriarTabelaComEstadosNovos();
+            tabela.PopularEstadosNovos();
         }
     }
 }

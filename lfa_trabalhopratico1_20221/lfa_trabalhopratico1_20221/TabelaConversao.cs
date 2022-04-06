@@ -52,7 +52,7 @@ namespace lfa_trabalhopratico1_20221
                 {
                     if(Tabela[linha, coluna] != null && Tabela[linha, coluna].Length > 1)
                     {
-                        var estadoNovo = string.Join("", Tabela[linha, coluna]);
+                        var estadoNovo = string.Join(" ", Tabela[linha, coluna]);
                         Tabela[linha, coluna] = new string[] {estadoNovo};
                         states.Add(estadoNovo);
                     }
@@ -90,7 +90,19 @@ namespace lfa_trabalhopratico1_20221
             {
                 for (int linha = 0; linha < AutomatoConvertido.States.Count; linha++)
                 {
-                    
+                    if(Tabela[linha, coluna] != null && Tabela[linha, coluna].Length > 1)
+                    {
+                        string state = string.Join(" ", Tabela[linha, coluna]);
+                        if (AutomatoConvertido.States.Contains(state))
+                        {
+                            Tabela[linha, coluna] = new string[] { state };
+                        }
+                    }
+                    if (!Automato.States.Contains(AutomatoConvertido.States[coluna]))
+                    {
+                        var aux = AutomatoConvertido.States[coluna].Split(" ");
+
+                    }
                 }
             }
         }

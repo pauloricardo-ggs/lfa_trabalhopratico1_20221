@@ -14,8 +14,10 @@ namespace lfa_trabalhopratico1_20221
 
             Console.WriteLine($"O autômato é um {automato.DeterminarTipo()}\n");
             automato.Imprimir();
-            automato.ConverterNFAParaDFA();
-
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine();
+            automato.AutomatoFD.Imprimir();
 
             Console.Read();
         }
