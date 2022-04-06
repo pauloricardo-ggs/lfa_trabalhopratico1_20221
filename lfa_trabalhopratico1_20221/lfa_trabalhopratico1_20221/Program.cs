@@ -13,7 +13,10 @@ namespace lfa_trabalhopratico1_20221
             ImprimirTipo(tipo);
             ImprimirDoArquivo(automato);
 
-            //if(tipo != "DFA") imprimir conversão
+            if (tipo == "NFA") 
+            {
+                automato.AutomatoFND.ConverterParaAFD();
+            }
 
             while (true)
             {

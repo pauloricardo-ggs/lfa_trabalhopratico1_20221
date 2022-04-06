@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace lfa_trabalhopratico1_20221
 {
@@ -15,6 +16,7 @@ namespace lfa_trabalhopratico1_20221
         public List<string[]> TransitionsFutureState { get; private set; }
 
         public AutomatoFD AutomatoFD { get; set; }
+        public AutomatoFND AutomatoFND { get; set; }
 
         public Automato(string[] linhas)
         {
@@ -30,6 +32,10 @@ namespace lfa_trabalhopratico1_20221
             if (tipo == "DFA")
             {
                 CriarAutomatoFD();
+            }
+            if (tipo == "NFA")
+            {
+                CriarAutomatoFND();
             }
         }
 
@@ -53,6 +59,35 @@ namespace lfa_trabalhopratico1_20221
                         estado.Entrada.Add(TransitionsInput[i]);
                         var futureState = TransitionsFutureState[i][0];
                         estado.ProximoEstado.Add(AutomatoFD.Estados.Find(e => e.Nome == futureState));
+                    }
+                }
+            }
+        }
+
+        public void CriarAutomatoFND()
+        {
+            AutomatoFND = new AutomatoFND(Alphabet, Transitions);
+            foreach (var stateName in States)
+            {
+                var estado = new EstadoFND(stateName);
+                AutomatoFND.Estados.Add(estado);
+                if (Initial.Contains(stateName)) { AutomatoFND.EstadoInicial = estado; }
+                if (Accepting.Contains(stateName)) { AutomatoFND.EstadosFinais.Add(estado); }
+            }
+
+            foreach (var automatoEstado in AutomatoFND.Estados)
+            {
+                for (var i = 0; i < Transitions.Count; i++)
+                {
+                    if (automatoEstado.Nome == TransitionsActualState[i])
+                    {
+                        automatoEstado.Entrada.Add(TransitionsInput[i]);
+                        var estadosFuturos = new List<EstadoFND>();
+                        foreach(var state in TransitionsFutureState[i])
+                        {
+                            estadosFuturos.Add(AutomatoFND.Estados.Find(e => e.Nome == state));
+                        }
+                        automatoEstado.ProximoEstado.Add(estadosFuturos);
                     }
                 }
             }
