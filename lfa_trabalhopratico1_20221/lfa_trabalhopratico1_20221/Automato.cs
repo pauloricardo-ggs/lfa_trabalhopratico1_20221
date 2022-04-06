@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace lfa_trabalhopratico1_20221
 {
@@ -11,33 +10,17 @@ namespace lfa_trabalhopratico1_20221
         public List<string> Accepting { get; set; }
         public List<string> Alphabet { get; set; }
         public List<string> Transitions { get; set; }
-
         public List<string> TransitionsActualState {  get; private set; }
         public List<string> TransitionsInput { get; private set; }
         public List<string[]> TransitionsFutureState { get; private set; }
 
         public AutomatoFD AutomatoFD { get; set; }
 
-        public Automato()
-        {
-            States = new List<string>();
-            Initial = new List<string>();
-            Accepting = new List<string>();
-            Alphabet = new List<string>();
-            Transitions = new List<string>();
-            TransitionsActualState = new List<string>();
-            TransitionsInput = new List<string>();
-            TransitionsFutureState = new List<string[]>();
-        }
-
         public Automato(string[] linhas)
         {
             InicializarListas();
-
             PopularPropriedades(linhas);
-
             OrganizarTransicoes();
-
             CriarAutomatoEspecializado();
         }
 
@@ -55,7 +38,7 @@ namespace lfa_trabalhopratico1_20221
             AutomatoFD = new AutomatoFD(Alphabet, Transitions);
             foreach (var state in States)
             {
-                var estado = new Estado(state);
+                var estado = new EstadoFD(state);
                 AutomatoFD.Estados.Add(estado);
                 if (Initial.Contains(state)) { AutomatoFD.EstadoInicial = estado; }
                 if (Accepting.Contains(state)) { AutomatoFD.EstadosFinais.Add(estado); }
@@ -182,15 +165,6 @@ namespace lfa_trabalhopratico1_20221
                 TransitionsInput.Add(divisao[1]);
                 TransitionsFutureState.Add(divisao[2].Split(','));
             }
-        }
-
-        public void ConverterNFAParaDFA()
-        {
-            var tabela = new TabelaConversao(this);
-            tabela.CriarTabela();
-            tabela.CriarEstadosNovos();
-            tabela.RecriarTabelaComEstadosNovos();
-            tabela.PopularEstadosNovos();
         }
     }
 }
