@@ -23,36 +23,75 @@ namespace lfa_trabalhopratico1_20221
         public List<EstadoFND> EstadosFinais { get; set; }
         public List<string> Alfabeto { get; set; }
 
-        public void ConverterParaAFD()
+        public AutomatoFD ConverterParaAFD()
         {
-            var qtdLinhas = Estados.Count;
-            var qtdColunas = Alfabeto.Count;
             var continuarLoop = true;
 
-            ImprimirTabela(qtdLinhas, qtdColunas);
+            ImprimirTabela();
 
             while (continuarLoop)
             {
-                var dimensaoTabela = TransformarEstadosMultiplosEmUmNovoEstado(qtdLinhas, qtdColunas);
-                continuarLoop = false;
-                qtdLinhas = dimensaoTabela[0];
-                qtdColunas = dimensaoTabela[1];
-                ImprimirTabela(qtdLinhas, qtdColunas);
+                TransformarEstadosMultiplosEmUmNovoEstado();
+                ImprimirTabela();
 
                 PopularNovosEstados();
-                ImprimirTabela(qtdLinhas, qtdColunas);
+                ImprimirTabela();
 
-                foreach (var estado in Estados)
+                continuarLoop = ChecarLoop();
+            }
+
+            RemoverEstadosInalcancaveis();
+            ImprimirTabela();
+
+            return new AutomatoFD(Alfabeto, EstadoInicial, EstadosFinais, Estados);
+        }
+
+        public void RemoverEstadosInalcancaveis()
+        {
+            Estados.ForEach(x => x.EstadosAnteriores.Clear());
+            foreach (var estado in Estados)
+            {
+                foreach (var letra in Alfabeto)
                 {
-                    foreach (var caractere in Alfabeto)
+                    if (estado.Transicoes.ContainsKey(letra))
                     {
-                        if (estado.Transicoes.ContainsKey(caractere) && estado.Transicoes[caractere].Count > 1)
+                        foreach (var transicao in estado.Transicoes[letra])
                         {
-                            continuarLoop = true;
+                            transicao.EstadosAnteriores.Add(estado);
                         }
                     }
                 }
             }
+
+            var estadosASeremRemovidos = new List<EstadoFND>();
+            foreach (var estado in Estados)
+            {
+                if ((estado.EstadosAnteriores == null || estado.EstadosAnteriores.Count == 0) && EstadoInicial != estado)
+                {
+                    estadosASeremRemovidos.Add(estado);
+                }
+            }
+            foreach (var estado in estadosASeremRemovidos)
+            {
+                Estados.Remove(estado);
+                EstadosFinais.Remove(estado);
+            }
+        }
+
+        public bool ChecarLoop()
+        {
+            foreach (var estado in Estados)
+            {
+                foreach (var caractere in Alfabeto)
+                {
+                    if (estado.Transicoes.ContainsKey(caractere) && estado.Transicoes[caractere].Count > 1)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public void PopularNovosEstados()
@@ -75,10 +114,12 @@ namespace lfa_trabalhopratico1_20221
                                         x.Add(y);
                                     }
                                     estado.Transicoes.Add(caractere, x);
+                                    estado.Transicoes[caractere] = estado.Transicoes[caractere].Distinct().ToList();
                                 }
                                 else
                                 {
                                     estado.Transicoes[caractere].AddRange(criador.Transicoes[caractere]);
+                                    estado.Transicoes[caractere] = estado.Transicoes[caractere].Distinct().ToList();
                                 }
                             }
                         }
@@ -92,7 +133,7 @@ namespace lfa_trabalhopratico1_20221
             }
         }
 
-        public int[] TransformarEstadosMultiplosEmUmNovoEstado(int qtdLinhas, int qtdColunas)
+        public void TransformarEstadosMultiplosEmUmNovoEstado()
         {
             var estadosASeremAdicionados = new List<EstadoFND>();
             foreach (var estado in Estados)
@@ -122,7 +163,6 @@ namespace lfa_trabalhopratico1_20221
                             var estadoComMesmoNome = Estados.Find(x => x.Nome == nome);
                             if (estadoComMesmoNome == null)
                             {
-                                qtdLinhas++;
                                 var estadoNovo = new EstadoFND(nome);
                                 estadoNovo.EstadosCriadores.AddRange(estadosCriadores);
                                 estadosASeremAdicionados.Add(estadoNovo);
@@ -143,13 +183,9 @@ namespace lfa_trabalhopratico1_20221
                 }
             }
             Estados.AddRange(estadosASeremAdicionados);
-
-            var dimensaoTabela = new int[2] { qtdLinhas, qtdColunas };
-
-            return dimensaoTabela;
         }
 
-        public void ImprimirTabela(int qtdLinhas, int qtdColunas)
+        public void ImprimirTabela()
         {
             var espacamento = "\t\t\t";
             Console.Write($"\n{espacamento}");
@@ -193,9 +229,11 @@ namespace lfa_trabalhopratico1_20221
             Nome = nome;
             Transicoes = new Dictionary<string, List<EstadoFND>>();
             EstadosCriadores = new List<EstadoFND>();
+            EstadosAnteriores = new List<EstadoFND>();
         }
 
         public string Nome { get; set; }
+        public List<EstadoFND> EstadosAnteriores { get; set; }
         public Dictionary<string, List<EstadoFND>> Transicoes { get; set; }
         public List<EstadoFND> EstadosCriadores { get; set; }
     }

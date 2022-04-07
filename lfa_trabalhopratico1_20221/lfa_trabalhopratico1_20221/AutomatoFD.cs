@@ -5,6 +5,45 @@ namespace lfa_trabalhopratico1_20221
 {
     public class AutomatoFD
     {
+        public AutomatoFD(List<string> alfabeto, EstadoFND estadoInicial, List<EstadoFND> estadosFinais, List<EstadoFND> estados)
+        {
+            Estados = new List<EstadoFD>();
+            EstadosFinais = new List<EstadoFD>();
+            Transicoes = new List<string>();
+            Alfabeto = alfabeto;
+
+            foreach (var estadoFND in estados)
+            {
+                var estado = new EstadoFD(estadoFND.Nome);
+                Estados.Add(estado);
+            }
+            foreach (var estadoFND in estados)
+            {
+                var estadoFD = Estados.Find(x => x.Nome == estadoFND.Nome);
+                foreach (var caractere in Alfabeto)
+                {
+                    if (estadoFND.Transicoes.ContainsKey(caractere))
+                    {
+                        estadoFD.Entrada.Add(caractere);
+                        estadoFD.ProximoEstado.Add(Estados.Find(x => x.Nome == estadoFND.Transicoes[caractere][0].Nome));
+                    }
+                }
+            }
+            EstadoInicial = Estados.Find(x => x.Nome == estadoInicial.Nome);
+            foreach (var ef in estadosFinais)
+            {
+                EstadosFinais.Add(Estados.Find(x => x.Nome == ef.Nome));
+            }
+
+            foreach(var estado in Estados)
+            {
+                for(int i = 0; i < estado.Entrada.Count; i++)
+                {
+                    Transicoes.Add($"{estado.Nome}:{estado.Entrada[i]}>{estado.ProximoEstado[i].Nome}");
+                }
+            }
+        }
+
         public AutomatoFD(List<string> alfabeto, List<string> transicoes)
         {
             Estados = new List<EstadoFD>();
@@ -94,6 +133,13 @@ namespace lfa_trabalhopratico1_20221
                         Console.Write($"{estadoAtual.Nome}");
                         Console.ResetColor();
                         Console.WriteLine($"'.");
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"A leitura da palavra acabou pois não foi encontrado caminho a partir de {estadoAtual.Nome} com entrada {letra}.");
+                        Console.ResetColor();
+                        break;
                     }
                 }
             }

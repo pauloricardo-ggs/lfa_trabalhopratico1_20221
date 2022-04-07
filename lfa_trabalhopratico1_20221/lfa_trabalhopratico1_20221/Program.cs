@@ -15,7 +15,8 @@ namespace lfa_trabalhopratico1_20221
 
             if (tipo == "NFA") 
             {
-                automato.AutomatoFND.ConverterParaAFD();
+                automato.AutomatoFD = automato.AutomatoFND.ConverterParaAFD();
+                ImprimirAutomatoConvertido(automato);
             }
 
             while (true)
@@ -50,6 +51,16 @@ namespace lfa_trabalhopratico1_20221
             Console.WriteLine("...");
             Console.ForegroundColor = ConsoleColor.Blue;
             automato.Imprimir();
+            Console.WriteLine();
+            Console.ResetColor();
+        }
+
+        public static void ImprimirAutomatoConvertido(Automato automato)
+        {
+            Console.Write("\n\nImprimindo NFA convertido para DFA");
+            Console.WriteLine("...");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            automato.AutomatoFD.Imprimir();
             Console.WriteLine();
             Console.ResetColor();
         }
