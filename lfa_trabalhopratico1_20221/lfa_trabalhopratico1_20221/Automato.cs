@@ -67,6 +67,8 @@ namespace lfa_trabalhopratico1_20221
         public void CriarAutomatoFND()
         {
             AutomatoFND = new AutomatoFND(Alphabet, Transitions);
+
+            // Criar estados FND
             foreach (var stateName in States)
             {
                 var estado = new EstadoFND(stateName);
@@ -75,19 +77,20 @@ namespace lfa_trabalhopratico1_20221
                 if (Accepting.Contains(stateName)) { AutomatoFND.EstadosFinais.Add(estado); }
             }
 
+            // Popular transiçoes de estados
             foreach (var automatoEstado in AutomatoFND.Estados)
             {
                 for (var i = 0; i < Transitions.Count; i++)
                 {
                     if (automatoEstado.Nome == TransitionsActualState[i])
                     {
-                        automatoEstado.Entrada.Add(TransitionsInput[i]);
-                        var estadosFuturos = new List<EstadoFND>();
+                        var proximosEstados = new List<EstadoFND>();
                         foreach(var state in TransitionsFutureState[i])
                         {
-                            estadosFuturos.Add(AutomatoFND.Estados.Find(e => e.Nome == state));
+                            proximosEstados.Add(AutomatoFND.Estados.Find(e => e.Nome == state));
                         }
-                        automatoEstado.ProximoEstado.Add(estadosFuturos);
+                        proximosEstados = proximosEstados.OrderBy(e => e.Nome).ToList();
+                        automatoEstado.Transicoes.Add(TransitionsInput[i], proximosEstados);
                     }
                 }
             }
